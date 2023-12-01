@@ -2,11 +2,12 @@ package vector
 
 import (
 	"fmt"
-	"github.com/lattots/gonum/pkg/util"
 	"math"
 	"reflect"
 	"testing"
 	"time"
+
+	"github.com/lattots/gonum/pkg/util"
 )
 
 func TestNewVector(t *testing.T) {

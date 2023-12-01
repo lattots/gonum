@@ -1,9 +1,10 @@
 package matrix
 
 import (
-	"github.com/lattots/gonum/pkg/util"
 	"reflect"
 	"testing"
+
+	"github.com/lattots/gonum/pkg/util"
 )
 
 func TestNewMatrix(t *testing.T) {

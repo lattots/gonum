@@ -2,6 +2,7 @@ package vector
 
 import (
 	"fmt"
+	"github.com/lattots/gonum/pkg/util"
 	"math"
 	"reflect"
 	"testing"
@@ -99,7 +100,7 @@ func TestNormalizeVector(t *testing.T) {
 	vector.NormalizeVector()
 	expectedVector, _ := NewVector([]float64{0.6, 0.8})
 	for i := range vector.Vec {
-		if !equalFloat(vector.Vec[i], expectedVector.Vec[i]) {
+		if !util.EqualFloat(vector.Vec[i], expectedVector.Vec[i]) {
 			t.Errorf("Expected %+v\nGot: %+v", expectedVector, vector)
 		}
 	}

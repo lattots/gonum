@@ -1,6 +1,7 @@
 package matrix
 
 import (
+	"github.com/lattots/gonum/pkg/util"
 	"reflect"
 	"testing"
 )
@@ -93,7 +94,7 @@ func TestMatrixSum(t *testing.T) {
 	// Compare matrices element-wise with tolerance
 	for i := range expectedSum {
 		for j := range expectedSum[i] {
-			if !equalFloat(result.Data[i][j], expectedSum[i][j]) {
+			if !util.EqualFloat(result.Data[i][j], expectedSum[i][j]) {
 				t.Errorf("Expected sum: %v, Got: %v", expectedSum, result.Data)
 				break
 			}

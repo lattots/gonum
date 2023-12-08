@@ -105,3 +105,77 @@ func (m *Matrix) Sum(other *Matrix) (*Matrix, error) {
 
 	return resultMatrix, nil
 }
+
+func (m *Matrix) Subtract(other *Matrix) (*Matrix, error) {
+	duplicate, err := NewMatrix(other.Data)
+	if err != nil {
+		return nil, err
+	}
+
+	duplicate.Scale(-1)
+
+	resultMatrix, err := m.Sum(duplicate)
+	if err != nil {
+		return nil, err
+	}
+
+	return resultMatrix, nil
+}
+
+func (m *Matrix) Scale(scalar float64) {
+	for i := 0; i < m.M; i++ {
+		for j := 0; j < m.N; j++ {
+			m.Data[i][j] = m.Data[i][j] * scalar
+		}
+	}
+}
+
+func (m *Matrix) Transpose() (*Matrix, error) {
+	tData := make([][]float64, m.N)
+	for i := range tData {
+		tData[i] = make([]float64, m.M)
+	}
+
+	for i := 0; i < m.M; i++ {
+		for j := 0; j < m.N; j++ {
+			tData[j][i] = m.Data[i][j]
+		}
+	}
+
+	t, err := NewMatrix(tData)
+	if err != nil {
+		return nil, err
+	}
+
+	return t, nil
+}
+
+func (m *Matrix) Multiply(other *Matrix) (*Matrix, error) {
+	if m.N != other.M {
+		return nil, fmt.Errorf("cannot multiply matrices: Number of columns in the first matrix (%d) must be equal to the number of rows in the second matrix (%d)", m.N, other.M)
+	} else if m.M == 0 {
+		return nil, fmt.Errorf("cannot multiply with nil matrix")
+	}
+
+	resultData := make([][]float64, m.M)
+	for i := 0; i < m.M; i++ {
+		resultData[i] = make([]float64, other.N)
+	}
+
+	for i := 0; i < m.M; i++ {
+		for j := 0; j < other.N; j++ {
+			var r float64
+			for k := 0; k < m.N; k++ {
+				r += m.Data[i][k] * other.Data[k][j]
+			}
+			resultData[i][j] = r
+		}
+	}
+
+	resultMatrix, err := NewMatrix(resultData)
+	if err != nil {
+		return nil, err
+	}
+
+	return resultMatrix, nil
+}

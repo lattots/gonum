@@ -50,6 +50,35 @@ func TestNewMatrix(t *testing.T) {
 	fmt.Printf("Runtime: %v\n", time.Since(start))
 }
 
+func TestNewZeroMatrix(t *testing.T) {
+	fmt.Println("Testing NewMatrix...")
+	start := time.Now()
+
+	const (
+		m = 3
+		n = 5
+	)
+
+	mat, err := NewZeroMatrix(m, n)
+	if err != nil {
+		t.Errorf("Error creating matrix: %v", err)
+	}
+
+	if mat.M != m || mat.N != n {
+		t.Error("Created matrices dimensions are wrong")
+	}
+
+	for _, row := range mat.Data {
+		for _, val := range row {
+			if val != 0 {
+				t.Errorf("Found non-zero value in matrix: %f", val)
+			}
+		}
+	}
+
+	fmt.Printf("Runtime: %v\n", time.Since(start))
+}
+
 func TestMatrixString(t *testing.T) {
 	fmt.Println("Testing String...")
 	start := time.Now()

@@ -30,6 +30,25 @@ func NewMatrix(matrix [][]float64) (*Matrix, error) {
 	return &m, nil
 }
 
+func NewZeroMatrix(m, n int) (*Matrix, error) {
+	if m <= 0 || n <= 0 {
+		return nil, fmt.Errorf("dimensions of matrices must be above zero")
+	}
+	data := make([][]float64, m)
+	for i := range data {
+		rowData := make([]float64, n)
+		for i := range rowData {
+			rowData[i] = 0
+		}
+		data[i] = rowData
+	}
+	mat, err := NewMatrix(data)
+	if err != nil {
+		return nil, err
+	}
+	return mat, nil
+}
+
 func isValid(m [][]float64) bool {
 
 	n := len(m[0])

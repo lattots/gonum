@@ -149,7 +149,7 @@ func (m *Matrix) Scale(scalar float64) {
 	}
 }
 
-func (m *Matrix) Transpose() (*Matrix, error) {
+func (m *Matrix) Transpose() *Matrix {
 	tData := make([][]float64, m.N)
 	for i := range tData {
 		tData[i] = make([]float64, m.M)
@@ -161,12 +161,9 @@ func (m *Matrix) Transpose() (*Matrix, error) {
 		}
 	}
 
-	t, err := NewMatrix(tData)
-	if err != nil {
-		return nil, err
-	}
+	t, _ := NewMatrix(tData) // The new matrice's data is known to be correct, so error can be ignored
 
-	return t, nil
+	return t
 }
 
 func (m *Matrix) Multiply(other *Matrix) (*Matrix, error) {

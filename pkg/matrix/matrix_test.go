@@ -321,10 +321,7 @@ func TestMatrixTranspose(t *testing.T) {
 		t.Errorf("Error creating matrix1: %v", err)
 	}
 
-	transposed, err := m1.Transpose()
-	if err != nil {
-		t.Errorf("Error during matrix transpose: %v", err)
-	}
+	transposed := m1.Transpose()
 
 	// Compare matrices element-wise with tolerance
 	for i := range expectedTranspose1 {

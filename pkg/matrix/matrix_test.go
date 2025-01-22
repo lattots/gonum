@@ -10,7 +10,6 @@ import (
 )
 
 func TestNewMatrix(t *testing.T) {
-	fmt.Println("Testing NewMatrix...")
 	start := time.Now()
 
 	// Test case 1: Valid matrix
@@ -51,7 +50,6 @@ func TestNewMatrix(t *testing.T) {
 }
 
 func TestNewZeroMatrix(t *testing.T) {
-	fmt.Println("Testing NewMatrix...")
 	start := time.Now()
 
 	const (
@@ -80,7 +78,6 @@ func TestNewZeroMatrix(t *testing.T) {
 }
 
 func TestMatrixString(t *testing.T) {
-	fmt.Println("Testing String...")
 	start := time.Now()
 
 	// Test case 1: Valid matrix
@@ -104,7 +101,6 @@ func TestMatrixString(t *testing.T) {
 }
 
 func TestMatrixSum(t *testing.T) {
-	fmt.Println("Testing Sum...")
 	start := time.Now()
 
 	// Test case 1: Valid matrices with the same dimensions
@@ -175,7 +171,6 @@ func TestMatrixSum(t *testing.T) {
 }
 
 func TestMatrixSubtract(t *testing.T) {
-	fmt.Println("Testing Subtract...")
 	start := time.Now()
 
 	// Test case 1: Valid matrices with the same dimensions
@@ -246,7 +241,6 @@ func TestMatrixSubtract(t *testing.T) {
 }
 
 func TestMatrixScale(t *testing.T) {
-	fmt.Println("Testing Scale...")
 	start := time.Now()
 
 	// Test case 1: Positive scalar
@@ -309,7 +303,6 @@ func TestMatrixScale(t *testing.T) {
 }
 
 func TestMatrixTranspose(t *testing.T) {
-	fmt.Println("Testing Transpose...")
 	start := time.Now()
 
 	// Test case 1: Valid matrix
@@ -347,7 +340,6 @@ func TestMatrixTranspose(t *testing.T) {
 }
 
 func TestMatrixMultiply(t *testing.T) {
-	fmt.Println("Testing Multiply...")
 	start := time.Now()
 
 	// Test case 1: Valid multiplication
@@ -421,8 +413,6 @@ func TestMatrixMultiply(t *testing.T) {
 }
 
 func TestLargeMatrixMultiply(t *testing.T) {
-	fmt.Println("Testing Large Matrix Multiply...")
-
 	// Create a 100x100 matrix filled with ones
 	matrix1 := make([][]float64, 100)
 	for i := range matrix1 {
@@ -487,4 +477,48 @@ func TestLargeMatrixMultiply(t *testing.T) {
 		}
 	}
 
+}
+
+func TestMatrixMultiplyElements(t *testing.T) {
+	start := time.Now()
+
+	m1, err := NewMatrix([][]float64{
+		{1, 2, 3},
+		{4, 5, 6},
+		{7, 8, 9},
+	})
+	if err != nil {
+		t.Error(err)
+	}
+
+	m2, err := NewMatrix([][]float64{
+		{1, 1, 1},
+		{1, 1, 1},
+		{1, 1, 1},
+	})
+	if err != nil {
+		t.Error(err)
+	}
+
+	expectedResult, err := NewMatrix([][]float64{
+		{1, 2, 3},
+		{4, 5, 6},
+		{7, 8, 9},
+	})
+
+	result, err := m1.MultiplyElements(m2)
+	if err != nil {
+		t.Error(err)
+	}
+
+	fmt.Printf("Runtime: %v\n", time.Since(start))
+
+	for i := range expectedResult.Data {
+		for j := range expectedResult.Data[i] {
+			if !util.EqualFloat(result.Data[i][j], expectedResult.Data[i][j]) {
+				t.Errorf("Expected result: %v, Got: %v", expectedResult.Data, result.Data)
+				break
+			}
+		}
+	}
 }

@@ -11,7 +11,6 @@ import (
 )
 
 func TestNewVector(t *testing.T) {
-	fmt.Println("Testing NewVector...")
 	start := time.Now()
 
 	// Test case 1: Valid vector creation
@@ -43,7 +42,6 @@ func TestNewVector(t *testing.T) {
 }
 
 func TestCosineSimilarity(t *testing.T) {
-	fmt.Println("Testing CosineSimilarity...")
 	start := time.Now()
 
 	// Test case 1: Valid cosine similarity calculation
@@ -73,7 +71,6 @@ func TestCosineSimilarity(t *testing.T) {
 }
 
 func TestCalculateLength(t *testing.T) {
-	fmt.Println("Testing CalculateLength...")
 	start := time.Now()
 
 	// Test case 1: Valid length calculation
@@ -93,7 +90,6 @@ func TestCalculateLength(t *testing.T) {
 }
 
 func TestNormalizeVector(t *testing.T) {
-	fmt.Println("Testing NormalizeVector...")
 	start := time.Now()
 
 	// Test case 1: Valid normalization
@@ -117,7 +113,6 @@ func TestNormalizeVector(t *testing.T) {
 }
 
 func TestScale(t *testing.T) {
-	fmt.Println("Testing Scale...")
 	start := time.Now()
 
 	// Test case 1: Valid scaling
@@ -139,7 +134,6 @@ func TestScale(t *testing.T) {
 }
 
 func TestCalculateDotProduct(t *testing.T) {
-	fmt.Println("Testing CalculateDotProduct...")
 	start := time.Now()
 
 	// Test case 1: Valid dot product calculation
@@ -167,7 +161,6 @@ func TestCalculateDotProduct(t *testing.T) {
 }
 
 func TestSum(t *testing.T) {
-	fmt.Println("Testing Sum...")
 	start := time.Now()
 
 	// Test case 1: Valid vector sum
@@ -186,7 +179,6 @@ func TestSum(t *testing.T) {
 }
 
 func TestSubtract(t *testing.T) {
-	fmt.Println("Testing Subtract...")
 	start := time.Now()
 
 	// Test case 1: Valid vector subtraction
@@ -205,7 +197,6 @@ func TestSubtract(t *testing.T) {
 }
 
 func TestCalculateCrossProduct(t *testing.T) {
-	fmt.Println("Testing CalculateCrossProduct...")
 	start := time.Now()
 
 	// Test case 1: Valid cross product calculation
@@ -233,7 +224,6 @@ func TestCalculateCrossProduct(t *testing.T) {
 }
 
 func TestString(t *testing.T) {
-	fmt.Println("Testing String...")
 	start := time.Now()
 
 	// Test case 1: Vector with dimension greater than 3

@@ -198,3 +198,26 @@ func (m *Matrix) Multiply(other *Matrix) (*Matrix, error) {
 
 	return resultMatrix, nil
 }
+
+func (m *Matrix) MultiplyElements(other *Matrix) (*Matrix, error) {
+	if m.M != other.M || m.N != other.N {
+		return nil, fmt.Errorf("cannot multiply matrices: matrices must have the same shape")
+	} else if m.M == 0 {
+		return nil, fmt.Errorf("cannot multiply with nil matrix")
+	}
+
+	resultData := make([][]float64, m.M)
+	for i := range m.Data {
+		resultData[i] = make([]float64, m.N)
+		for j := range m.Data[i] {
+			resultData[i][j] = m.Data[i][j] * other.Data[i][j]
+		}
+	}
+
+	resultMatrix, err := NewMatrix(resultData)
+	if err != nil {
+		return nil, err
+	}
+
+	return resultMatrix, nil
+}

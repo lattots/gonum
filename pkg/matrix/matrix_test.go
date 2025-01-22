@@ -9,6 +9,21 @@ import (
 	"github.com/lattots/gonum/pkg/util"
 )
 
+func equalMatrix(m1, m2 *Matrix) bool {
+	if m1.M != m2.M || m1.N != m2.N {
+		return false
+	}
+
+	for i := range m1.Data {
+		for j := range m1.Data[i] {
+			if !util.EqualFloat(m2.Data[i][j], m1.Data[i][j]) {
+				return false
+			}
+		}
+	}
+	return true
+}
+
 func TestNewMatrix(t *testing.T) {
 	start := time.Now()
 
@@ -78,26 +93,35 @@ func TestNewZeroMatrix(t *testing.T) {
 }
 
 func TestMatrixString(t *testing.T) {
-	start := time.Now()
-
-	// Test case 1: Valid matrix
-	validMatrix := [][]float64{
+	smallMatrix, err := NewMatrix([][]float64{
 		{1.1, 2.2, 3.3},
 		{4.4, 5.5, 6.6},
-	}
-	expectedString := "2 x 3\n1.10 2.20 3.30\n4.40 5.50 6.60\n"
-
-	matrix, err := NewMatrix(validMatrix)
+		{7.7, 8.8, 9.9},
+	})
 	if err != nil {
 		t.Errorf("Error creating matrix: %v", err)
 	}
 
-	resultString := matrix.String()
+	expectedString := "3 x 3\n1.10 2.20 3.30\n4.40 5.50 6.60\n7.70 8.80 9.90\n"
+
+	resultString := smallMatrix.String()
 	if resultString != expectedString {
-		t.Errorf("Expected: %s, Got: %s", expectedString, resultString)
+		t.Errorf("Expected:\n%s\nGot:\n%s", expectedString, resultString)
 	}
 
-	fmt.Printf("Runtime: %v\n", time.Since(start))
+	largeMatrix, err := NewMatrix([][]float64{
+		{1, 2, 3, 4, 5, 6, 7},
+		{2, 2, 3, 4, 5, 6, 7},
+		{3, 2, 3, 4, 5, 6, 7},
+		{4, 2, 3, 4, 5, 6, 7},
+	})
+
+	expectedString = "4 x 7\n1.00 2.00 ... 7.00\n2.00 2.00 ... 7.00\n...\n4.00 2.00 ... 7.00\n"
+
+	resultString = largeMatrix.String()
+	if resultString != expectedString {
+		t.Errorf("Expected:\n%s\nGot:\n%s", expectedString, resultString)
+	}
 }
 
 func TestMatrixSum(t *testing.T) {
@@ -517,5 +541,50 @@ func TestMatrixMultiplyElements(t *testing.T) {
 				break
 			}
 		}
+	}
+}
+
+func TestMatrixSumRows(t *testing.T) {
+	m1, err := NewMatrix([][]float64{
+		{1, 1, 1},
+		{2, 2, 2},
+		{3, 3, 3},
+		{4, 4, 4},
+	})
+	if err != nil {
+		t.Error(err)
+	}
+
+	expectedResult, err := NewMatrix([][]float64{{10, 10, 10}})
+
+	result := m1.SumRows()
+
+	if !equalMatrix(result, expectedResult) {
+		t.Errorf("result matrix != expected result:\n%s\n!=\n\n%s", result.String(), expectedResult.String())
+	}
+}
+
+func TestMatrixSumColumns(t *testing.T) {
+	m1, err := NewMatrix([][]float64{
+		{1, 1, 1},
+		{2, 2, 2},
+		{3, 3, 3},
+		{4, 4, 4},
+	})
+	if err != nil {
+		t.Error(err)
+	}
+
+	expectedResult, err := NewMatrix([][]float64{
+		{3},
+		{6},
+		{9},
+		{12},
+	})
+
+	result := m1.SumColumns()
+
+	if !equalMatrix(result, expectedResult) {
+		t.Errorf("result matrix != expected result:\n%s\n!=\n\n%s", result.String(), expectedResult.String())
 	}
 }

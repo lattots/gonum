@@ -64,8 +64,12 @@ func (m *Matrix) String() string {
 
 	matString := fmt.Sprintf("%d x %d\n", m.M, m.N)
 
-	for _, row := range m.Data {
-		matString += stringRow(row) + "\n"
+	if m.M <= 3 {
+		for i := range m.Data {
+			matString += stringRow(m.Data[i]) + "\n"
+		}
+	} else {
+		matString += stringRow(m.Data[0]) + "\n" + stringRow(m.Data[1]) + "\n...\n" + stringRow(m.Data[len(m.Data)-1]) + "\n"
 	}
 
 	return matString
@@ -84,15 +88,9 @@ func stringRow(r []float64) string {
 			row += " " + fStr(r[i], 2)
 		}
 	} else {
-		row = fStr(r[0], 2)
+		row = fStr(r[0], 2) + " " + fStr(r[1], 2)
 
-		r = r[1:]
-
-		for i := 0; i < 3; i++ {
-			row += " " + fStr(r[i], 2)
-		}
-
-		row += "..." + fStr(r[len(r)-1], 2)
+		row += " ... " + fStr(r[len(r)-1], 2)
 	}
 
 	return row
@@ -217,4 +215,40 @@ func (m *Matrix) MultiplyElements(other *Matrix) (*Matrix, error) {
 	}
 
 	return resultMatrix, nil
+}
+
+// SumRows sums up the values in all rows and returns a 1xn matrix.
+// If the matrix m doesn't have rows, method returns a nil pointer
+func (m *Matrix) SumRows() *Matrix {
+	if m.M <= 0 {
+		return nil
+	}
+
+	res, _ := NewZeroMatrix(1, m.N)
+
+	for i := range m.Data {
+		for j := range m.Data[i] {
+			res.Data[0][j] += m.Data[i][j]
+		}
+	}
+
+	return res
+}
+
+// SumColumns sums up the values in all columns and returns an mx1 matrix.
+// If the matrix m doesn't have columns, method returns a nil pointer
+func (m *Matrix) SumColumns() *Matrix {
+	if m.N <= 0 {
+		return nil
+	}
+
+	res, _ := NewZeroMatrix(m.M, 1)
+
+	for j := range m.Data[0] {
+		for i := range m.Data {
+			res.Data[i][0] += m.Data[i][j]
+		}
+	}
+
+	return res
 }

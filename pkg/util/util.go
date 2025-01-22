@@ -1,6 +1,8 @@
 package util
 
-import "math"
+import (
+	"math"
+)
 
 func EqualFloat(float1 float64, float2 float64) bool {
 	// Tolerance of +- 0.00001% is accepted.

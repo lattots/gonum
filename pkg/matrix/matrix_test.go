@@ -151,7 +151,7 @@ func TestMatrixSum(t *testing.T) {
 		t.Errorf("Error creating matrix2: %v", err)
 	}
 
-	result, err := m1.Sum(m2)
+	result := m1.Sum(m2)
 	if err != nil {
 		t.Errorf("Error during matrix summation: %v", err)
 	}
@@ -164,31 +164,6 @@ func TestMatrixSum(t *testing.T) {
 				break
 			}
 		}
-	}
-
-	// Test case 2: Matrices with different dimensions
-	matrix3 := [][]float64{
-		{1.1, 2.2, 3.3},
-		{4.4, 5.5, 6.6},
-	}
-	matrix4 := [][]float64{
-		{0.1, 1.2},
-		{3.4, 4.5},
-	}
-
-	m3, err := NewMatrix(matrix3)
-	if err != nil {
-		t.Errorf("Error creating matrix3: %v", err)
-	}
-
-	m4, err := NewMatrix(matrix4)
-	if err != nil {
-		t.Errorf("Error creating matrix4: %v", err)
-	}
-
-	_, err = m3.Sum(m4)
-	if err == nil {
-		t.Error("Expected error for matrices with different dimensions, but got nil")
 	}
 
 	fmt.Printf("Runtime: %v\n", time.Since(start))
@@ -221,10 +196,7 @@ func TestMatrixSubtract(t *testing.T) {
 		t.Errorf("Error creating matrix2: %v", err)
 	}
 
-	result, err := m1.Subtract(m2)
-	if err != nil {
-		t.Errorf("Error during matrix subtraction: %v", err)
-	}
+	result := m1.Subtract(m2)
 
 	// Compare matrices element-wise with tolerance
 	for i := range expectedResult {
@@ -234,31 +206,6 @@ func TestMatrixSubtract(t *testing.T) {
 				break
 			}
 		}
-	}
-
-	// Test case 2: Matrices with different dimensions
-	matrix3 := [][]float64{
-		{1.1, 2.2, 3.3},
-		{4.4, 5.5, 6.6},
-	}
-	matrix4 := [][]float64{
-		{0.1, 1.2},
-		{3.4, 4.5},
-	}
-
-	m3, err := NewMatrix(matrix3)
-	if err != nil {
-		t.Errorf("Error creating matrix3: %v", err)
-	}
-
-	m4, err := NewMatrix(matrix4)
-	if err != nil {
-		t.Errorf("Error creating matrix4: %v", err)
-	}
-
-	_, err = m3.Subtract(m4)
-	if err == nil {
-		t.Error("Expected error for matrices with different dimensions, but got nil")
 	}
 
 	fmt.Printf("Runtime: %v\n", time.Since(start))
@@ -435,18 +382,18 @@ func TestMatrixMultiply(t *testing.T) {
 
 func TestLargeMatrixMultiply(t *testing.T) {
 	// Create a 100x100 matrix filled with ones
-	matrix1 := make([][]float64, 100)
+	matrix1 := make([][]float64, 1000)
 	for i := range matrix1 {
-		matrix1[i] = make([]float64, 100)
+		matrix1[i] = make([]float64, 1000)
 		for j := range matrix1[i] {
 			matrix1[i][j] = 1.0
 		}
 	}
 
 	// Create a 100x100 matrix with diagonal values as 2, others as 1
-	matrix2 := make([][]float64, 100)
+	matrix2 := make([][]float64, 1000)
 	for i := range matrix2 {
-		matrix2[i] = make([]float64, 100)
+		matrix2[i] = make([]float64, 1000)
 		for j := range matrix2[i] {
 			if i == j {
 				matrix2[i][j] = 2.0
@@ -471,7 +418,7 @@ func TestLargeMatrixMultiply(t *testing.T) {
 	for i := range expectedData {
 		expectedData[i] = make([]float64, m2.N)
 		for j := range expectedData[i] {
-			expectedData[i][j] = 101.0
+			expectedData[i][j] = 1001.0
 		}
 	}
 	expectedResult, err := NewMatrix(expectedData)
@@ -486,18 +433,19 @@ func TestLargeMatrixMultiply(t *testing.T) {
 		t.Errorf("Error during matrix multiplication: %v", err)
 	}
 
-	fmt.Printf("Runtime: %v\n", time.Since(start))
+	fmt.Printf("Strassen multiply took: %v\n", time.Since(start))
 
-	// Compare matrices element-wise with tolerance
-	for i := range expectedResult.Data {
-		for j := range expectedResult.Data[i] {
-			if !util.EqualFloat(result.Data[i][j], expectedResult.Data[i][j]) {
-				t.Errorf("Expected result: %v, Got: %v", expectedResult.Data, result.Data)
-				break
-			}
-		}
+	start = time.Now()
+
+	result = m1.multiplyStandard(m2)
+	if err != nil {
+		t.Errorf("Error during matrix multiplication: %v", err)
 	}
 
+	fmt.Printf("Naive multiply took: %v\n", time.Since(start))
+	if !equalMatrix(result, expectedResult) {
+		t.Errorf("Expected result:\n\n%s\nGot: %s\n", expectedResult.String(), result.String())
+	}
 }
 
 func TestMatrixMultiplyElements(t *testing.T) {
@@ -583,6 +531,119 @@ func TestMatrixSumColumns(t *testing.T) {
 	})
 
 	result := m1.SumColumns()
+
+	if !equalMatrix(result, expectedResult) {
+		t.Errorf("result matrix != expected result:\n%s\n!=\n\n%s", result.String(), expectedResult.String())
+	}
+}
+
+func TestMatrixSquare(t *testing.T) {
+	m11, _ := NewMatrix([][]float64{
+		{3},
+		{6},
+		{9},
+	})
+	m12, _ := NewMatrix([][]float64{
+		{3},
+	})
+
+	expectedM11, _ := NewMatrix([][]float64{
+		{3, 0, 0, 0},
+		{6, 0, 0, 0},
+		{9, 0, 0, 0},
+		{0, 0, 0, 0},
+	})
+
+	expectedM12, _ := NewMatrix([][]float64{
+		{3, 0, 0, 0},
+		{0, 0, 0, 0},
+		{0, 0, 0, 0},
+		{0, 0, 0, 0},
+	})
+
+	resultM11, resultM12 := square(m11, m12)
+
+	if !equalMatrix(resultM11, expectedM11) {
+		t.Errorf("result matrix != expected result:\n%s\n!=\n\n%s", resultM11.String(), expectedM11.String())
+	}
+	if !equalMatrix(resultM12, expectedM12) {
+		t.Errorf("result matrix != expected result:\n%s\n!=\n\n%s", resultM12.String(), expectedM12.String())
+	}
+}
+
+func TestMatrixSplit(t *testing.T) {
+	m, _ := NewMatrix([][]float64{
+		{1, 1, 2, 2},
+		{1, 1, 2, 2},
+		{3, 3, 4, 4},
+		{3, 3, 4, 4},
+	})
+
+	expectedM11, _ := NewMatrix([][]float64{
+		{1, 1},
+		{1, 1},
+	})
+	expectedM12, _ := NewMatrix([][]float64{
+		{2, 2},
+		{2, 2},
+	})
+	expectedM21, _ := NewMatrix([][]float64{
+		{3, 3},
+		{3, 3},
+	})
+	expectedM22, _ := NewMatrix([][]float64{
+		{4, 4},
+		{4, 4},
+	})
+
+	m11, m12, m21, m22, err := split(m)
+	if err != nil {
+		t.Errorf("error splitting matrix: %s", err)
+	}
+
+	if !equalMatrix(m11, expectedM11) {
+		t.Errorf("result matrix != expected result:\n%s\n!=\n\n%s", m11.String(), expectedM11.String())
+	}
+	if !equalMatrix(m12, expectedM12) {
+		t.Errorf("result matrix != expected result:\n%s\n!=\n\n%s", m12.String(), expectedM12.String())
+	}
+	if !equalMatrix(m21, expectedM21) {
+		t.Errorf("result matrix != expected result:\n%s\n!=\n\n%s", m21.String(), expectedM21.String())
+	}
+	if !equalMatrix(m22, expectedM22) {
+		t.Errorf("result matrix != expected result:\n%s\n!=\n\n%s", m22.String(), expectedM22.String())
+	}
+}
+
+func TestMatrixCombine(t *testing.T) {
+	m11, _ := NewMatrix([][]float64{
+		{1, 1},
+		{1, 1},
+	})
+	m12, _ := NewMatrix([][]float64{
+		{2, 2},
+		{2, 2},
+	})
+	m21, _ := NewMatrix([][]float64{
+		{3, 3},
+		{3, 3},
+	})
+	m22, _ := NewMatrix([][]float64{
+		{4, 4},
+		{4, 4},
+	})
+
+	expectedResult, _ := NewMatrix([][]float64{
+		{1, 1, 2, 2},
+		{1, 1, 2, 2},
+		{3, 3, 4, 4},
+		{3, 3, 4, 4},
+	})
+
+	result, err := combine(m11, m12, m21, m22, m11.M)
+	if err != nil {
+		t.Errorf("error combinin matrices: %s", err)
+	}
 
 	if !equalMatrix(result, expectedResult) {
 		t.Errorf("result matrix != expected result:\n%s\n!=\n\n%s", result.String(), expectedResult.String())

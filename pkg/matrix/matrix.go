@@ -100,61 +100,14 @@ func fStr(f float64, prec int) string {
 	return strconv.FormatFloat(f, 'f', prec, 64)
 }
 
-func (m *Matrix) Sum(other *Matrix) (*Matrix, error) {
-
-	if m.M != other.M || m.N != other.N {
-		return nil, fmt.Errorf("CANNOT SUM MATRICES WITH DIFFERENT DIMENSIONALITY")
-	}
-
-	resultData := make([][]float64, m.M)
-	for i := 0; i < m.M; i++ {
-		resultRow := make([]float64, m.N)
-		for j := 0; j < m.N; j++ {
-			resultRow[j] = m.Data[i][j] + other.Data[i][j]
-		}
-		resultData[i] = resultRow
-	}
-
-	resultMatrix, err := NewMatrix(resultData)
-	if err != nil {
-		return nil, err
-	}
-
-	return resultMatrix, nil
-}
-
-func (m *Matrix) Subtract(other *Matrix) (*Matrix, error) {
-	duplicate, err := NewMatrix(other.Data)
-	if err != nil {
-		return nil, err
-	}
-
-	duplicate.Scale(-1)
-
-	resultMatrix, err := m.Sum(duplicate)
-	if err != nil {
-		return nil, err
-	}
-
-	return resultMatrix, nil
-}
-
-func (m *Matrix) Scale(scalar float64) {
-	for i := 0; i < m.M; i++ {
-		for j := 0; j < m.N; j++ {
-			m.Data[i][j] = m.Data[i][j] * scalar
-		}
-	}
-}
-
 func (m *Matrix) Transpose() *Matrix {
 	tData := make([][]float64, m.N)
 	for i := range tData {
 		tData[i] = make([]float64, m.M)
 	}
 
-	for i := 0; i < m.M; i++ {
-		for j := 0; j < m.N; j++ {
+	for i := range m.M {
+		for j := range m.N {
 			tData[j][i] = m.Data[i][j]
 		}
 	}
@@ -164,91 +117,11 @@ func (m *Matrix) Transpose() *Matrix {
 	return t
 }
 
-func (m *Matrix) Multiply(other *Matrix) (*Matrix, error) {
-	if m.N != other.M {
-		return nil, fmt.Errorf("cannot multiply matrices: Number of columns in the first matrix (%d) must be equal to the number of rows in the second matrix (%d)", m.N, other.M)
-	} else if m.M == 0 {
-		return nil, fmt.Errorf("cannot multiply with nil matrix")
-	}
-
-	resultData := make([][]float64, m.M)
-	for i := 0; i < m.M; i++ {
-		resultData[i] = make([]float64, other.N)
-	}
-
-	for i := 0; i < m.M; i++ {
-		for j := 0; j < other.N; j++ {
-			var r float64
-			for k := 0; k < m.N; k++ {
-				r += m.Data[i][k] * other.Data[k][j]
-			}
-			resultData[i][j] = r
+func (m *Matrix) Scale(scalar float64) {
+	for i := range m.M {
+		for j := range m.N {
+			m.Data[i][j] = m.Data[i][j] * scalar
 		}
 	}
-
-	resultMatrix, err := NewMatrix(resultData)
-	if err != nil {
-		return nil, err
-	}
-
-	return resultMatrix, nil
 }
 
-func (m *Matrix) MultiplyElements(other *Matrix) (*Matrix, error) {
-	if m.M != other.M || m.N != other.N {
-		return nil, fmt.Errorf("cannot multiply matrices: matrices must have the same shape")
-	} else if m.M == 0 {
-		return nil, fmt.Errorf("cannot multiply with nil matrix")
-	}
-
-	resultData := make([][]float64, m.M)
-	for i := range m.Data {
-		resultData[i] = make([]float64, m.N)
-		for j := range m.Data[i] {
-			resultData[i][j] = m.Data[i][j] * other.Data[i][j]
-		}
-	}
-
-	resultMatrix, err := NewMatrix(resultData)
-	if err != nil {
-		return nil, err
-	}
-
-	return resultMatrix, nil
-}
-
-// SumRows sums up the values in all rows and returns a 1xn matrix.
-// If the matrix m doesn't have rows, method returns a nil pointer
-func (m *Matrix) SumRows() *Matrix {
-	if m.M <= 0 {
-		return nil
-	}
-
-	res, _ := NewZeroMatrix(1, m.N)
-
-	for i := range m.Data {
-		for j := range m.Data[i] {
-			res.Data[0][j] += m.Data[i][j]
-		}
-	}
-
-	return res
-}
-
-// SumColumns sums up the values in all columns and returns an mx1 matrix.
-// If the matrix m doesn't have columns, method returns a nil pointer
-func (m *Matrix) SumColumns() *Matrix {
-	if m.N <= 0 {
-		return nil
-	}
-
-	res, _ := NewZeroMatrix(m.M, 1)
-
-	for j := range m.Data[0] {
-		for i := range m.Data {
-			res.Data[i][0] += m.Data[i][j]
-		}
-	}
-
-	return res
-}

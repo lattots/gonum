@@ -125,3 +125,15 @@ func (m *Matrix) Scale(scalar float64) {
 	}
 }
 
+func (m *Matrix) Map(fn func(float64) float64) (*Matrix, error) {
+	res, err := NewZeroMatrix(m.M, m.N)
+	if err != nil {
+		return nil, fmt.Errorf("error creating new zero matrix: %w", err)
+	}
+	for i := range m.M {
+		for j := range m.N {
+			res.Data[i][j] = fn(m.Data[i][j])
+		}
+	}
+	return res, nil
+}

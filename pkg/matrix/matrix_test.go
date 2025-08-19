@@ -311,19 +311,25 @@ func TestMatrixMultiply(t *testing.T) {
 	start := time.Now()
 
 	// Test case 1: Valid multiplication
+	// Matrix 1: a 2x5 matrix
 	matrix1 := [][]float64{
-		{1, 2},
-		{3, 4},
+		{1, 2, 3, 4, 5},
+		{6, 7, 8, 9, 10},
 	}
 
+	// Matrix 2: a 5x2 matrix
 	matrix2 := [][]float64{
-		{5, 6},
-		{7, 8},
+		{11, 12},
+		{13, 14},
+		{15, 16},
+		{17, 18},
+		{19, 20},
 	}
 
+	// Expected Result: a 2x2 matrix
 	expectedResult := [][]float64{
-		{19, 22},
-		{43, 50},
+		{245, 260},
+		{620, 660},
 	}
 
 	m1, err := NewMatrix(matrix1)

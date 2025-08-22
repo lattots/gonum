@@ -14,7 +14,11 @@ func (m *Matrix) Multiply(other *Matrix) (*Matrix, error) {
 	mSq, otherSq := square(m, other)
 	res := mSq.multiplyStrassenRecursive(otherSq)
 
-	result, _ := NewMatrix(res.Data[:m.M][:other.N])
+	data := make([][]float64, m.M)
+	for i := 0; i < m.M; i++ {
+		data[i] = res.Data[i][:other.N]
+	}
+	result, _ := NewMatrix(data)
 
 	return result, nil
 }

@@ -332,6 +332,11 @@ func TestMatrixMultiply(t *testing.T) {
 		{620, 660},
 	}
 
+	expectedMatrix, err := NewMatrix(expectedResult)
+	if err != nil {
+		t.Errorf("Error creating expectedMatrix: %v", err)
+	}
+
 	m1, err := NewMatrix(matrix1)
 	if err != nil {
 		t.Errorf("Error creating matrix1: %v", err)
@@ -347,14 +352,8 @@ func TestMatrixMultiply(t *testing.T) {
 		t.Errorf("Error during matrix multiplication: %v", err)
 	}
 
-	// Compare matrices element-wise with tolerance
-	for i := range expectedResult {
-		for j := range expectedResult[i] {
-			if !util.EqualFloat(result.Data[i][j], expectedResult[i][j]) {
-				t.Errorf("Expected result: %v, Got: %v", expectedResult, result.Data)
-				break
-			}
-		}
+	if !equalMatrix(result, expectedMatrix) {
+		t.Errorf("Expected result: %v, Got: %v", expectedMatrix, result)
 	}
 
 	// Test case 2: Incompatible dimensions

@@ -2,6 +2,7 @@ package matrix
 
 import (
 	"fmt"
+	"sync"
 )
 
 const baseCaseSize = 64
@@ -34,18 +35,30 @@ func (m *Matrix) multiplyStrassenRecursive(other *Matrix) *Matrix {
 	a11, a12, a21, a22, _ := split(m)
 	b11, b12, b21, b22, _ := split(other)
 
-	p1 := a11.multiplyStrassenRecursive(b12.Subtract(b22))
-	p2 := (a11.Sum(a12)).multiplyStrassenRecursive(b22)
-	p3 := (a21.Sum(a22)).multiplyStrassenRecursive(b11)
-	p4 := a22.multiplyStrassenRecursive(b21.Subtract(b11))
-	p5 := (a11.Sum(a22)).multiplyStrassenRecursive(b11.Sum(b22))
-	p6 := (a12.Subtract(a22)).multiplyStrassenRecursive(b21.Sum(b22))
-	p7 := (a11.Subtract(a21)).multiplyStrassenRecursive(b11.Sum(b12))
+	var wg sync.WaitGroup
+	products := make([]*Matrix, 7)
 
-	c11 := p5.Sum(p4).Subtract(p2).Sum(p6)
-	c12 := p1.Sum(p2)
-	c21 := p3.Sum(p4)
-	c22 := p5.Sum(p1).Subtract(p3).Subtract(p7)
+	wg.Add(7)
+
+	calculateProduct := func(index int, op1, op2 *Matrix) {
+		defer wg.Done()
+		products[index] = op1.multiplyStrassenRecursive(op2)
+	}
+
+	go calculateProduct(0, a11, b12.Subtract(b22))          // p1
+	go calculateProduct(1, a11.Sum(a12), b22)               // p2
+	go calculateProduct(2, a21.Sum(a22), b11)               // p3
+	go calculateProduct(3, a22, b21.Subtract(b11))          // p4
+	go calculateProduct(4, a11.Sum(a22), b11.Sum(b22))      // p5
+	go calculateProduct(5, a12.Subtract(a22), b21.Sum(b22)) // p6
+	go calculateProduct(6, a11.Subtract(a21), b11.Sum(b12)) // p7
+
+	wg.Wait()
+
+	c11 := products[4].Sum(products[3]).Subtract(products[1]).Sum(products[5])      // p5 + p4 - p2 + p6
+	c12 := products[0].Sum(products[1])                                             // p1 + p2
+	c21 := products[2].Sum(products[3])                                             // p3 + p4
+	c22 := products[4].Sum(products[0]).Subtract(products[2]).Subtract(products[6]) // p5 + p1 - p3 - p7
 
 	result, _ := combine(c11, c12, c21, c22, n)
 
@@ -82,15 +95,12 @@ func square(m1, m2 *Matrix) (*Matrix, *Matrix) {
 	newM2, _ := NewZeroMatrix(size, size)
 
 	for i := range m1.Data {
-		for j := range m1.Data[i] {
-			newM1.Data[i][j] = m1.Data[i][j]
-		}
+		copy(newM1.Data[i], m1.Data[i])
 	}
 	for i := range m2.Data {
-		for j := range m2.Data[i] {
-			newM2.Data[i][j] = m2.Data[i][j]
-		}
+		copy(newM2.Data[i], m2.Data[i])
 	}
+
 	return newM1, newM2
 }
 

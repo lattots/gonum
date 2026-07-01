@@ -1,9 +1,7 @@
 .PHONY: test test-v
 
 test:
-	@go test ./pkg/matrix
-	@go test ./pkg/vector
+	@go test ./mat
 
 test-v:
-	@go test -v ./pkg/matrix
-	@go test -v ./pkg/vector
+	@go test -v ./mat

@@ -9,7 +9,7 @@ Gonum is a linear algebra library written in native Go. It provides functionalit
 You can use Gonum by importing your desired package to your own project
 
 ```bash
-go get github.com/lattots/gonum/pkg/pkg_name
+go get github.com/lattots/gonum
 ```
 
 ```go
@@ -17,12 +17,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/lattots/gonum/pkg/matrix"
+	"github.com/lattots/gonum/mat"
 	"log"
 )
 
 func main() {
-	m, err := matrix.NewMatrix([][]float64{
+	m, err := mat.New([][]float64{
 		{1, 2},
 		{3, 4},
 	})

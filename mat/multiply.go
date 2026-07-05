@@ -3,12 +3,13 @@ package mat
 import (
 	"fmt"
 	"math/bits"
+	"runtime"
 	"sync"
 
 	"github.com/lattots/gonum/number"
 )
 
-const naiveThreshold = 64
+const naiveThreshold = 128
 
 func Dot[T number.Num](m1, m2 *Mat[T]) (*Mat[T], error) {
 	if m1.N != m2.M {
@@ -71,18 +72,40 @@ func Mul[T number.Num](m1, m2 *Mat[T]) (*Mat[T], error) {
 func dotNaive[T number.Num](m1, m2 *Mat[T]) *Mat[T] {
 	result, _ := Zeros[T](m1.M, m2.N)
 
-	for i := 0; i < m1.M; i++ {
-		for j := 0; j < m2.N; j++ {
-			var sum T
-			for k := 0; k < m1.N; k++ {
-				m1Val := m1.Data[i*m1.N+k]
-				m2Val := m2.Data[k*m2.N+j]
-				sum += m1Val * m2Val
-			}
-			result.Data[i*result.N+j] = sum
+	numWorkers := min(runtime.GOMAXPROCS(0), m1.M)
+
+	var wg sync.WaitGroup
+	wg.Add(numWorkers)
+
+	rowsPerWorker := m1.M / numWorkers
+
+	for w := range numWorkers {
+		startRow := w * rowsPerWorker
+		endRow := (w + 1) * rowsPerWorker
+
+		// Last worker handles all remaining rows
+		if w == numWorkers-1 {
+			endRow = m1.M
 		}
+
+		go func(start, end int) {
+			defer wg.Done()
+
+			for i := start; i < end; i++ {
+				for j := 0; j < m2.N; j++ {
+					var sum T
+					for k := 0; k < m1.N; k++ {
+						m1Val := m1.Data[i*m1.N+k]
+						m2Val := m2.Data[k*m2.N+j]
+						sum += m1Val * m2Val
+					}
+					result.Data[i*result.N+j] = sum
+				}
+			}
+		}(startRow, endRow)
 	}
 
+	wg.Wait()
 	return result
 }
 

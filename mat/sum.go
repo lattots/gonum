@@ -81,3 +81,49 @@ func SumColumns[T number.Num](m *Mat[T]) *Mat[T] {
 		Data: data,
 	}
 }
+
+// AddRowVector adds a 1xN row vector to every row of an MxN matrix.
+// Panics if the vector is not 1xN or if column counts mismatch.
+func AddRowVector[T number.Num](m, row *Mat[T]) *Mat[T] {
+	if row.M != 1 || row.N != m.N {
+		panic(fmt.Sprintf("matrix math error: invalid dimensions for row broadcasting (%dx%d and %dx%d)", m.M, m.N, row.M, row.N))
+	}
+
+	data := make([]T, len(m.Data))
+	for r := 0; r < m.M; r++ {
+		for c := 0; c < m.N; c++ {
+			idx := r*m.N + c
+			data[idx] = m.Data[idx] + row.Data[c]
+		}
+	}
+
+	return &Mat[T]{
+		M:    m.M,
+		N:    m.N,
+		Data: data,
+	}
+}
+
+// AddColVector adds an Mx1 column vector to every column of an MxN matrix.
+// Panics if the vector is not Mx1 or if row counts mismatch.
+func AddColVector[T number.Num](m, col *Mat[T]) *Mat[T] {
+	if col.N != 1 || col.M != m.M {
+		panic(fmt.Sprintf("matrix math error: invalid dimensions for column broadcasting (%dx%d and %dx%d)", m.M, m.N, col.M, col.N))
+	}
+
+	data := make([]T, len(m.Data))
+	for r := 0; r < m.M; r++ {
+		colVal := col.Data[r]
+
+		for c := 0; c < m.N; c++ {
+			idx := r*m.N + c
+			data[idx] = m.Data[idx] + colVal
+		}
+	}
+
+	return &Mat[T]{
+		M:    m.M,
+		N:    m.N,
+		Data: data,
+	}
+}

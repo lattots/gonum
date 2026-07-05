@@ -41,13 +41,34 @@ func Zeros[T number.Num](m, n int) (*Mat[T], error) {
 		return nil, fmt.Errorf("dimensions of matrices must be above zero")
 	}
 
-	flatData := make([]T, m*n)
+	data := make([]T, m*n)
 
 	return &Mat[T]{
 		M:    m,
 		N:    n,
-		Data: flatData,
+		Data: data,
 	}, nil
+}
+
+func Ones[T number.Num](m, n int) (*Mat[T], error) {
+	if m <= 0 || n <= 0 {
+		return nil, fmt.Errorf("dimensions of matrices must be above zero")
+	}
+
+	data := make([]T, m*n)
+	for i := range data {
+		data[i] = 1
+	}
+
+	return &Mat[T]{
+		M:    m,
+		N:    n,
+		Data: data,
+	}, nil
+}
+
+func (m *Mat[T]) At(i, j int) T {
+	return m.Data[(i-1)*m.N+(j-1)]
 }
 
 func Transpose[T number.Num](m *Mat[T]) *Mat[T] {

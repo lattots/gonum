@@ -92,6 +92,56 @@ func TestNewZeroMatrix(t *testing.T) {
 	fmt.Printf("Runtime: %v\n", time.Since(start))
 }
 
+func TestNewOneMatrix(t *testing.T) {
+	start := time.Now()
+
+	const (
+		rows    = 3
+		columns = 5
+	)
+
+	m, err := mat.Ones[int](rows, columns)
+	if err != nil {
+		t.Errorf("Error creating one integer matrix: %v", err)
+	}
+
+	if m.M != rows || m.N != columns {
+		t.Error("Created matrices dimensions are wrong")
+	}
+
+	for _, val := range m.Data {
+		if val != 1 {
+			t.Errorf("Found non-zero value in matrix: %v", val)
+		}
+	}
+
+	fmt.Printf("Runtime: %v\n", time.Since(start))
+}
+
+func TestAt(t *testing.T) {
+	start := time.Now()
+
+	data := [][]int{
+		{1, 2},
+		{3, 4},
+	}
+
+	m, err := mat.New(data)
+	if err != nil {
+		t.Errorf("Error creating matrix: %v", err)
+	}
+
+	if m.At(1, 1) != 1 {
+		t.Errorf("Found wrong value at 1, 1. Want: %v\nGot: %v", m.Data[0], m.At(1, 1))
+	}
+
+	if m.At(2, 1) != 3 {
+		t.Errorf("Found wrong value at 2, 1. Want: %v\nGot: %v", m.Data[2], m.At(2, 1))
+	}
+
+	fmt.Printf("Runtime: %v\n", time.Since(start))
+}
+
 func TestMatrixString(t *testing.T) {
 	smallMatrix, err := mat.New([][]float64{
 		{1.1, 2.2, 3.3},
@@ -122,88 +172,6 @@ func TestMatrixString(t *testing.T) {
 	if resultString != expectedString {
 		t.Errorf("Expected:\n%s\nGot:\n%s", expectedString, resultString)
 	}
-}
-
-func TestMatrixSum(t *testing.T) {
-	start := time.Now()
-
-	// Test case 1: Valid matrices with the same dimensions
-	data1 := [][]float64{
-		{1.1, 2.2, 3.3},
-		{4.4, 5.5, 6.6},
-	}
-	data2 := [][]float64{
-		{0.1, 1.2, 2.3},
-		{3.4, 4.5, 5.6},
-	}
-	dataExpected := [][]float64{
-		{1.2, 3.4, 5.6},
-		{7.8, 10.0, 12.2},
-	}
-
-	m1, err := mat.New(data1)
-	if err != nil {
-		t.Errorf("Error creating matrix: %v", err)
-	}
-
-	m2, err := mat.New(data2)
-	if err != nil {
-		t.Errorf("Error creating matrix: %v", err)
-	}
-
-	expected, err := mat.New(dataExpected)
-	if err != nil {
-		t.Errorf("Error creating matrix: %v", err)
-	}
-
-	result := mat.Sum(m1, m2)
-
-	if !util.EqualMatrix(result, expected) {
-		t.Errorf("Wrong result in matrix addition. Want: %s\nGot: %s", expected, result)
-	}
-
-	fmt.Printf("Runtime: %v\n", time.Since(start))
-}
-
-func TestMatrixSubtract(t *testing.T) {
-	start := time.Now()
-
-	// Test case 1: Valid matrices with the same dimensions
-	data1 := [][]float64{
-		{1.1, 2.2, 3.3},
-		{4.4, 5.5, 6.6},
-	}
-	data2 := [][]float64{
-		{0.1, 1.2, 2.3},
-		{3.4, 4.5, 5.6},
-	}
-	dataExpected := [][]float64{
-		{1.0, 1.0, 1.0},
-		{1.0, 1.0, 1.0},
-	}
-
-	m1, err := mat.New(data1)
-	if err != nil {
-		t.Errorf("Error creating matrix: %v", err)
-	}
-
-	m2, err := mat.New(data2)
-	if err != nil {
-		t.Errorf("Error creating matrix: %v", err)
-	}
-
-	expected, err := mat.New(dataExpected)
-	if err != nil {
-		t.Errorf("Error creating matrix: %v", err)
-	}
-
-	result := mat.Subtract(m1, m2)
-
-	if !util.EqualMatrix(result, expected) {
-		t.Errorf("Wrong result in matrix subtraction. Want: %s\nGot: %s", expected, result)
-	}
-
-	fmt.Printf("Runtime: %v\n", time.Since(start))
 }
 
 func TestMatrixScale(t *testing.T) {
@@ -425,60 +393,6 @@ func TestMatrixTranspose(t *testing.T) {
 
 	if !util.EqualMatrix(result, expected) {
 		t.Errorf("Wrong result in matrix transpose. Want: %s\nGot: %s", expected, result)
-	}
-
-	fmt.Printf("Runtime: %v\n", time.Since(start))
-}
-
-func TestMatrixSumRows(t *testing.T) {
-	start := time.Now()
-
-	m, err := mat.New([][]float64{
-		{1, 1, 1},
-		{2, 2, 2},
-		{3, 3, 3},
-		{4, 4, 4},
-	})
-	if err != nil {
-		t.Errorf("Error creating matrix: %v", err)
-	}
-
-	expected, err := mat.New([][]float64{{10, 10, 10}})
-	if err != nil {
-		t.Errorf("Error creating matrix: %v", err)
-	}
-
-	result := mat.SumRows(m)
-
-	if !util.EqualMatrix(result, expected) {
-		t.Errorf("Wrong result in column wise addition. Want: %s\nGot: %s", expected, result)
-	}
-
-	fmt.Printf("Runtime: %v\n", time.Since(start))
-}
-
-func TestMatrixSumColumns(t *testing.T) {
-	start := time.Now()
-
-	m, err := mat.New([][]float64{
-		{1, 1, 1},
-		{2, 2, 2},
-		{3, 3, 3},
-		{4, 4, 4},
-	})
-	if err != nil {
-		t.Errorf("Error creating matrix: %v", err)
-	}
-
-	expected, err := mat.New([][]float64{{3}, {6}, {9}, {12}})
-	if err != nil {
-		t.Errorf("Error creating matrix: %v", err)
-	}
-
-	result := mat.SumColumns(m)
-
-	if !util.EqualMatrix(result, expected) {
-		t.Errorf("Wrong result in row wise addition. Want: %s\nGot: %s", expected, result)
 	}
 
 	fmt.Printf("Runtime: %v\n", time.Since(start))

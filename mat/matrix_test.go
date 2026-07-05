@@ -397,3 +397,79 @@ func TestMatrixTranspose(t *testing.T) {
 
 	fmt.Printf("Runtime: %v\n", time.Since(start))
 }
+
+func TestMatrixMin(t *testing.T) {
+	start := time.Now()
+
+	// Test case 1: Valid matrix with varied numbers
+	m, err := mat.New([][]float64{
+		{5.5, 12.1, -3.4},
+		{0.0, -10.2, 8.8},
+	})
+	if err != nil {
+		t.Errorf("Error creating matrix: %v", err)
+	}
+
+	expected := -10.2
+	result := mat.Min(m)
+
+	if result != expected {
+		t.Errorf("Wrong result in Matrix Min. Want: %f, Got: %f", expected, result)
+	}
+
+	// Test case 2: Empty matrix (should panic)
+	emptyMat := &mat.Mat[float64]{
+		M:    0,
+		N:    0,
+		Data: []float64{},
+	}
+
+	func() {
+		defer func() {
+			if r := recover(); r == nil {
+				t.Errorf("Min did not panic on an empty matrix")
+			}
+		}()
+		mat.Min(emptyMat)
+	}()
+
+	fmt.Printf("Runtime: %v\n", time.Since(start))
+}
+
+func TestMatrixMax(t *testing.T) {
+	start := time.Now()
+
+	// Test case 1: Valid matrix with varied numbers
+	m, err := mat.New([][]float64{
+		{-5.5, 12.1, -3.4},
+		{0.0, 102.4, 8.8},
+	})
+	if err != nil {
+		t.Errorf("Error creating matrix: %v", err)
+	}
+
+	expected := 102.4
+	result := mat.Max(m)
+
+	if result != expected {
+		t.Errorf("Wrong result in Matrix Max. Want: %f, Got: %f", expected, result)
+	}
+
+	// Test case 2: Empty matrix (should panic)
+	emptyMat := &mat.Mat[float64]{
+		M:    0,
+		N:    0,
+		Data: []float64{},
+	}
+
+	func() {
+		defer func() {
+			if r := recover(); r == nil {
+				t.Errorf("Max did not panic on an empty matrix")
+			}
+		}()
+		mat.Max(emptyMat)
+	}()
+
+	fmt.Printf("Runtime: %v\n", time.Since(start))
+}

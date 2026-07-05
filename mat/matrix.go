@@ -181,6 +181,36 @@ func Map[T number.Num](m *Mat[T], fn func(T) T) *Mat[T] {
 	}
 }
 
+func Min[T number.Num](m *Mat[T]) T {
+	if len(m.Data) == 0 {
+		panic("matrix math error: cannot find minimum of an empty matrix")
+	}
+
+	curMin := m.Data[0]
+	for _, val := range m.Data {
+		if val < curMin {
+			curMin = val
+		}
+	}
+
+	return curMin
+}
+
+func Max[T number.Num](m *Mat[T]) T {
+	if len(m.Data) == 0 {
+		panic("matrix math error: cannot find maximum of an empty matrix")
+	}
+
+	curMax := m.Data[0]
+	for _, val := range m.Data {
+		if val > curMax {
+			curMax = val
+		}
+	}
+
+	return curMax
+}
+
 // isComplete checks if all rows in the matrix have the same number of elements
 func isComplete[T number.Num](data [][]T) bool {
 	n := len(data[0])

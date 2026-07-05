@@ -211,6 +211,31 @@ func Max[T number.Num](m *Mat[T]) T {
 	return curMax
 }
 
+func SliceRows[T number.Num](m *Mat[T], start, end int) *Mat[T] {
+	if start < 0 {
+		start = 0
+	}
+	if end > m.M {
+		end = m.M
+	}
+	if start >= end {
+		panic("start row index can't be greater than end index")
+	}
+
+	slicedRows := end - start
+	startIndex := start * m.N
+	endIndex := end * m.N
+
+	data := make([]T, slicedRows*m.N)
+	copy(data, m.Data[startIndex:endIndex])
+
+	return &Mat[T]{
+		M:    slicedRows,
+		N:    m.N,
+		Data: data,
+	}
+}
+
 // isComplete checks if all rows in the matrix have the same number of elements
 func isComplete[T number.Num](data [][]T) bool {
 	n := len(data[0])

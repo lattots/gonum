@@ -473,3 +473,96 @@ func TestMatrixMax(t *testing.T) {
 
 	fmt.Printf("Runtime: %v\n", time.Since(start))
 }
+
+func TestSliceRows(t *testing.T) {
+	start := time.Now()
+
+	// Test case 1: Slice middle rows using float64 matrix
+	data1 := [][]float64{
+		{1.0, 2.0, 3.0}, // Row 0
+		{4.0, 5.0, 6.0}, // Row 1
+		{7.0, 8.0, 9.0}, // Row 2
+	}
+	expectedData1 := [][]float64{
+		{4.0, 5.0, 6.0},
+		{7.0, 8.0, 9.0},
+	}
+
+	m1, err := mat.New(data1)
+	if err != nil {
+		t.Errorf("Error creating matrix: %v", err)
+	}
+
+	expected1, err := mat.New(expectedData1)
+	if err != nil {
+		t.Errorf("Error creating matrix: %v", err)
+	}
+
+	// Slice from row 1 to 3 (exclusive, so rows 1 and 2)
+	result1 := mat.SliceRows(m1, 1, 3)
+
+	if !util.EqualMatrix(result1, expected1) {
+		t.Errorf("Wrong result in SliceRows (float64 middle slice). Want: %s\nGot: %s", expected1, result1)
+	}
+
+	// Test case 2: Slice beginning rows using generic int32 matrix
+	data2 := [][]int32{
+		{10, 20}, // Row 0
+		{30, 40}, // Row 1
+		{50, 60}, // Row 2
+	}
+	expectedData2 := [][]int32{
+		{10, 20},
+		{30, 40},
+	}
+
+	m2, err := mat.New(data2)
+	if err != nil {
+		t.Errorf("Error creating matrix: %v", err)
+	}
+
+	expected2, err := mat.New(expectedData2)
+	if err != nil {
+		t.Errorf("Error creating matrix: %v", err)
+	}
+
+	// Slice from row 0 to 2 (exclusive, so rows 0 and 1)
+	result2 := mat.SliceRows(m2, 0, 2)
+
+	if !util.EqualMatrix(result2, expected2) {
+		t.Errorf("Wrong result in SliceRows (int32 front slice). Want: %s\nGot: %s", expected2, result2)
+	}
+
+	// Test case 3: Verify Deep Copy (modifying result shouldn't affect original matrix)
+	if len(result2.Data) > 0 {
+		originalVal := result2.Data[0]
+		result2.Data[0] = 999 // Mutate the sliced result
+
+		// If it's a deep copy, the parent matrix m2.Data[0] must still be its original value (10)
+		if m2.Data[0] == 999 {
+			t.Errorf("SliceRows did not perform a deep copy; modifying slice corrupted the original matrix data.")
+		}
+		result2.Data[0] = originalVal // Restore value just in case
+	}
+
+	// Test case 4: Invalid index ranges (should panic when start >= end)
+	func() {
+		defer func() {
+			if r := recover(); r == nil {
+				t.Errorf("SliceRows did not panic when start equaled end")
+			}
+		}()
+		mat.SliceRows(m1, 2, 2)
+	}()
+
+	func() {
+		defer func() {
+			if r := recover(); r == nil {
+				t.Errorf("SliceRows did not panic when start was greater than end")
+			}
+		}()
+		mat.SliceRows(m1, 2, 1)
+	}()
+
+	fmt.Printf("Runtime: %v\n", time.Since(start))
+}

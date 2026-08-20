@@ -236,6 +236,37 @@ func SliceRows[T number.Num](m *Mat[T], start, end int) *Mat[T] {
 	}
 }
 
+// GetRows creates a new matrix from the rows at specified indices in the source matrix.
+func GetRows[T number.Num](m *Mat[T], indices []int) *Mat[T] {
+	if len(indices) == 0 {
+		panic("indices slice cannot be empty")
+	}
+
+	numRows := len(indices)
+	numCols := m.N
+	data := make([]T, numRows*numCols)
+
+	for i, rowIdx := range indices {
+		if rowIdx < 0 || rowIdx >= m.M {
+			panic(fmt.Sprintf("row index %d out of bounds [0, %d)", rowIdx, m.M))
+		}
+
+		srcStart := rowIdx * numCols
+		srcEnd := srcStart + numCols
+
+		dstStart := i * numCols
+		dstEnd := dstStart + numCols
+
+		copy(data[dstStart:dstEnd], m.Data[srcStart:srcEnd])
+	}
+
+	return &Mat[T]{
+		M:    numRows,
+		N:    numCols,
+		Data: data,
+	}
+}
+
 // isComplete checks if all rows in the matrix have the same number of elements
 func isComplete[T number.Num](data [][]T) bool {
 	n := len(data[0])

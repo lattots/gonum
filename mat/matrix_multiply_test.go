@@ -85,24 +85,26 @@ func TestMatrixDot(t *testing.T) {
 }
 
 func TestLargeMatrixMultiply(t *testing.T) {
-	// Create a 1000x1000 matrix filled with ones
-	data1 := make([][]int, 1000)
+	const size = 1024
+
+	// Create a 1024x1024 matrix filled with ones
+	data1 := make([][]float32, size)
 	for i := range data1 {
-		data1[i] = make([]int, 1000)
+		data1[i] = make([]float32, size)
 		for j := range data1[i] {
-			data1[i][j] = 1.0
+			data1[i][j] = 1
 		}
 	}
 
-	// Create a 1000x1000 matrix with diagonal values as 2, others as 1
-	data2 := make([][]int, 1000)
+	// Create a 1024x1024 matrix with diagonal values as 2, others as 1
+	data2 := make([][]float32, size)
 	for i := range data2 {
-		data2[i] = make([]int, 1000)
+		data2[i] = make([]float32, size)
 		for j := range data2[i] {
 			if i == j {
-				data2[i][j] = 2.0
+				data2[i][j] = 2
 			} else {
-				data2[i][j] = 1.0
+				data2[i][j] = 1
 			}
 		}
 	}
@@ -117,12 +119,12 @@ func TestLargeMatrixMultiply(t *testing.T) {
 		t.Errorf("Error creating matrix: %v", err)
 	}
 
-	// Create the expected result matrix where each element is 1001
-	expectedData := make([][]int, m1.M)
+	// Create the expected result matrix where each element is 1025
+	expectedData := make([][]float32, m1.M)
 	for i := range expectedData {
-		expectedData[i] = make([]int, m2.N)
+		expectedData[i] = make([]float32, m2.N)
 		for j := range expectedData[i] {
-			expectedData[i][j] = 1001.0
+			expectedData[i][j] = 1025
 		}
 	}
 	expected, err := mat.New(expectedData)
@@ -137,7 +139,7 @@ func TestLargeMatrixMultiply(t *testing.T) {
 		t.Errorf("Error during matrix multiplication: %v", err)
 	}
 
-	fmt.Printf("Strassen multiply took: %v\n", time.Since(start))
+	fmt.Printf("1024x1024 multiply took: %v\n", time.Since(start))
 
 	if !util.EqualMatrix(result, expected) {
 		t.Errorf("Wrong result in matrix dot product. Want: %s\nGot: %s", expected, result)

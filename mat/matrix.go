@@ -318,7 +318,7 @@ func GetRows[T number.Num](m *Mat[T], indices []int) *Mat[T] {
 			panic(fmt.Sprintf("row index %d out of bounds [0, %d)", rowIdx, m.M))
 		}
 
-		srcStart := rowIdx * numCols
+		srcStart := rowIdx * m.Stride
 		srcEnd := srcStart + numCols
 
 		dstStart := i * numCols

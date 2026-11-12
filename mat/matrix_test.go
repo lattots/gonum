@@ -1,17 +1,13 @@
 package mat_test
 
 import (
-	"fmt"
 	"testing"
-	"time"
 
 	"github.com/lattots/gonum/internal/util"
 	"github.com/lattots/gonum/mat"
 )
 
 func TestNew(t *testing.T) {
-	start := time.Now()
-
 	// Test case 1: Valid float matrix
 	validFloatMatrix := [][]float64{
 		{1.1, 2.2, 3.3},
@@ -62,13 +58,9 @@ func TestNew(t *testing.T) {
 	if m2.M != expectedM || m2.N != expectedN {
 		t.Errorf("Invalid dimensions. Want (%v x %v), Got (%v x %v)", expectedM, expectedN, m2.M, m2.N)
 	}
-
-	fmt.Printf("Runtime: %v\n", time.Since(start))
 }
 
 func TestNewZeroMatrix(t *testing.T) {
-	start := time.Now()
-
 	const (
 		rows    = 3
 		columns = 5
@@ -88,13 +80,9 @@ func TestNewZeroMatrix(t *testing.T) {
 			t.Errorf("Found non-zero value in matrix: %v", val)
 		}
 	}
-
-	fmt.Printf("Runtime: %v\n", time.Since(start))
 }
 
 func TestNewOneMatrix(t *testing.T) {
-	start := time.Now()
-
 	const (
 		rows    = 3
 		columns = 5
@@ -114,13 +102,9 @@ func TestNewOneMatrix(t *testing.T) {
 			t.Errorf("Found non-zero value in matrix: %v", val)
 		}
 	}
-
-	fmt.Printf("Runtime: %v\n", time.Since(start))
 }
 
 func TestAt(t *testing.T) {
-	start := time.Now()
-
 	data := [][]int{
 		{1, 2},
 		{3, 4},
@@ -138,8 +122,6 @@ func TestAt(t *testing.T) {
 	if m.At(2, 1) != 3 {
 		t.Errorf("Found wrong value at 2, 1. Want: %v\nGot: %v", m.Data[2], m.At(2, 1))
 	}
-
-	fmt.Printf("Runtime: %v\n", time.Since(start))
 }
 
 func TestMatrixString(t *testing.T) {
@@ -175,8 +157,6 @@ func TestMatrixString(t *testing.T) {
 }
 
 func TestMatrixScale(t *testing.T) {
-	start := time.Now()
-
 	// Test case 1: Positive scalar
 	data1 := [][]float64{
 		{1.1, 2.2, 3.3},
@@ -230,13 +210,9 @@ func TestMatrixScale(t *testing.T) {
 	if !util.EqualMatrix(result2, expected2) {
 		t.Errorf("Wrong result in matrix scaling. Want: %s\nGot: %s", expected2, result2)
 	}
-
-	fmt.Printf("Runtime: %v\n", time.Since(start))
 }
 
 func TestMatrixAdd(t *testing.T) {
-	start := time.Now()
-
 	// Test case 1: Add a positive scalar float
 	data1 := [][]float64{
 		{1.1, 2.2, 3.3},
@@ -290,13 +266,9 @@ func TestMatrixAdd(t *testing.T) {
 	if !util.EqualMatrix(result2, expected2) {
 		t.Errorf("Wrong result in matrix scalar addition. Want: %s\nGot: %s", expected2, result2)
 	}
-
-	fmt.Printf("Runtime: %v\n", time.Since(start))
 }
 
 func TestMatrixMap(t *testing.T) {
-	start := time.Now()
-
 	// Test case 1: Squaring elements using float64
 	data1 := [][]float64{
 		{1.0, 2.0, 3.0},
@@ -361,13 +333,9 @@ func TestMatrixMap(t *testing.T) {
 	if !util.EqualMatrix(result2, expected2) {
 		t.Errorf("Wrong result in matrix map (int abs). Want: %s\nGot: %s", expected2, result2)
 	}
-
-	fmt.Printf("Runtime: %v\n", time.Since(start))
 }
 
 func TestMatrixTranspose(t *testing.T) {
-	start := time.Now()
-
 	// Test case 1: Valid matrix
 	data := [][]float64{
 		{1.1, 2.2, 3.3},
@@ -394,13 +362,9 @@ func TestMatrixTranspose(t *testing.T) {
 	if !util.EqualMatrix(result, expected) {
 		t.Errorf("Wrong result in matrix transpose. Want: %s\nGot: %s", expected, result)
 	}
-
-	fmt.Printf("Runtime: %v\n", time.Since(start))
 }
 
 func TestMatrixMin(t *testing.T) {
-	start := time.Now()
-
 	// Test case 1: Valid matrix with varied numbers
 	m, err := mat.New([][]float64{
 		{5.5, 12.1, -3.4},
@@ -432,13 +396,9 @@ func TestMatrixMin(t *testing.T) {
 		}()
 		mat.Min(emptyMat)
 	}()
-
-	fmt.Printf("Runtime: %v\n", time.Since(start))
 }
 
 func TestMatrixMax(t *testing.T) {
-	start := time.Now()
-
 	// Test case 1: Valid matrix with varied numbers
 	m, err := mat.New([][]float64{
 		{-5.5, 12.1, -3.4},
@@ -470,13 +430,9 @@ func TestMatrixMax(t *testing.T) {
 		}()
 		mat.Max(emptyMat)
 	}()
-
-	fmt.Printf("Runtime: %v\n", time.Since(start))
 }
 
 func TestSliceRows(t *testing.T) {
-	start := time.Now()
-
 	// Test case 1: Slice middle rows using float64 matrix
 	data1 := [][]float64{
 		{1.0, 2.0, 3.0}, // Row 0
@@ -563,6 +519,4 @@ func TestSliceRows(t *testing.T) {
 		}()
 		mat.SliceRows(m1, 2, 1)
 	}()
-
-	fmt.Printf("Runtime: %v\n", time.Since(start))
 }

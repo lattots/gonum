@@ -1,17 +1,13 @@
 package mat_test
 
 import (
-	"fmt"
 	"testing"
-	"time"
 
 	"github.com/lattots/gonum/internal/util"
 	"github.com/lattots/gonum/mat"
 )
 
 func TestMatrixDot(t *testing.T) {
-	start := time.Now()
-
 	// Test case 1: Valid multiplication
 	data1 := [][]int{
 		{1, 2, 3, 4, 5},
@@ -80,8 +76,6 @@ func TestMatrixDot(t *testing.T) {
 	if err == nil {
 		t.Error("Expected error for matrices with incompatible dimensions, but got nil")
 	}
-
-	fmt.Printf("Runtime: %v\n", time.Since(start))
 }
 
 func TestLargeMatrixMultiply(t *testing.T) {
@@ -132,14 +126,10 @@ func TestLargeMatrixMultiply(t *testing.T) {
 		t.Errorf("Error creating expected matrix: %v", err)
 	}
 
-	start := time.Now()
-
 	result, err := mat.Dot(m1, m2)
 	if err != nil {
 		t.Errorf("Error during matrix multiplication: %v", err)
 	}
-
-	fmt.Printf("1024x1024 multiply took: %v\n", time.Since(start))
 
 	if !util.EqualMatrix(result, expected) {
 		t.Errorf("Wrong result in matrix dot product. Want: %s\nGot: %s", expected, result)
@@ -147,8 +137,6 @@ func TestLargeMatrixMultiply(t *testing.T) {
 }
 
 func TestMatrixMul(t *testing.T) {
-	start := time.Now()
-
 	m1, err := mat.New([][]int{
 		{1, 2, 3},
 		{4, 5, 6},
@@ -183,114 +171,5 @@ func TestMatrixMul(t *testing.T) {
 
 	if !util.EqualMatrix(result, expected) {
 		t.Errorf("Wrong result in element wise matrix multiplication. Want: %s\nGot: %s", expected, result)
-	}
-
-	fmt.Printf("Runtime: %v\n", time.Since(start))
-}
-
-func TestMatrixSquare(t *testing.T) {
-	m1, _ := mat.New([][]int{
-		{3},
-		{6},
-		{9},
-	})
-	m2, _ := mat.New([][]int{
-		{3},
-	})
-
-	expected1, _ := mat.New([][]int{
-		{3, 0, 0, 0},
-		{6, 0, 0, 0},
-		{9, 0, 0, 0},
-		{0, 0, 0, 0},
-	})
-
-	expected2, _ := mat.New([][]int{
-		{3, 0, 0, 0},
-		{0, 0, 0, 0},
-		{0, 0, 0, 0},
-		{0, 0, 0, 0},
-	})
-
-	result1, result2 := mat.Square(m1, m2)
-
-	if !util.EqualMatrix(result1, expected1) {
-		t.Errorf("Wrong result squaring matrices. Want: %s\nGot: %s", expected1, result1)
-	}
-	if !util.EqualMatrix(result2, expected2) {
-		t.Errorf("Wrong result squaring matrices. Want: %s\nGot: %s", expected2, result2)
-	}
-}
-
-func TestMatrixSplit(t *testing.T) {
-	m, _ := mat.New([][]int{
-		{1, 1, 2, 2},
-		{1, 1, 2, 2},
-		{3, 3, 4, 4},
-		{3, 3, 4, 4},
-	})
-
-	expected11, _ := mat.New([][]int{
-		{1, 1},
-		{1, 1},
-	})
-	expected12, _ := mat.New([][]int{
-		{2, 2},
-		{2, 2},
-	})
-	expected21, _ := mat.New([][]int{
-		{3, 3},
-		{3, 3},
-	})
-	expected22, _ := mat.New([][]int{
-		{4, 4},
-		{4, 4},
-	})
-
-	m11, m12, m21, m22 := mat.Split(m)
-
-	if !util.EqualMatrix(m11, expected11) {
-		t.Errorf("Wrong result splitting a matrix. Want: %s\nGot: %s", expected11, m11)
-	}
-	if !util.EqualMatrix(m12, expected12) {
-		t.Errorf("Wrong result splitting a matrix. Want: %s\nGot: %s", expected12, m12)
-	}
-	if !util.EqualMatrix(m21, expected21) {
-		t.Errorf("Wrong result splitting a matrix. Want: %s\nGot: %s", expected21, m21)
-	}
-	if !util.EqualMatrix(m22, expected22) {
-		t.Errorf("Wrong result splitting a matrix. Want: %s\nGot: %s", expected22, m22)
-	}
-}
-
-func TestMatrixCombine(t *testing.T) {
-	m11, _ := mat.New([][]int{
-		{1, 1},
-		{1, 1},
-	})
-	m12, _ := mat.New([][]int{
-		{2, 2},
-		{2, 2},
-	})
-	m21, _ := mat.New([][]int{
-		{3, 3},
-		{3, 3},
-	})
-	m22, _ := mat.New([][]int{
-		{4, 4},
-		{4, 4},
-	})
-
-	expected, _ := mat.New([][]int{
-		{1, 1, 2, 2},
-		{1, 1, 2, 2},
-		{3, 3, 4, 4},
-		{3, 3, 4, 4},
-	})
-
-	result := mat.Combine(m11, m12, m21, m22, m11.M)
-
-	if !util.EqualMatrix(result, expected) {
-		t.Errorf("Wrong result combining matrices. Want: %s\nGot: %s", expected, result)
 	}
 }

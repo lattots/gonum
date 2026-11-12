@@ -2,15 +2,16 @@ package mat
 
 import (
 	"fmt"
+	"math/rand"
 	"strings"
 
 	"github.com/lattots/gonum/number"
 )
 
 type Mat[T number.Num] struct {
-	M    int
-	N    int
-	Data []T
+	M, N   int
+	Stride int
+	Data   []T
 }
 
 func New[T number.Num](data [][]T) (*Mat[T], error) {
@@ -28,9 +29,10 @@ func New[T number.Num](data [][]T) (*Mat[T], error) {
 	}
 
 	m := Mat[T]{
-		M:    len(data),
-		N:    len(data[0]),
-		Data: flatten(data),
+		M:      len(data),
+		N:      len(data[0]),
+		Stride: len(data[0]),
+		Data:   flatten(data),
 	}
 
 	return &m, nil
@@ -44,9 +46,10 @@ func Zeros[T number.Num](m, n int) (*Mat[T], error) {
 	data := make([]T, m*n)
 
 	return &Mat[T]{
-		M:    m,
-		N:    n,
-		Data: data,
+		M:      m,
+		N:      n,
+		Stride: n,
+		Data:   data,
 	}, nil
 }
 
@@ -61,14 +64,56 @@ func Ones[T number.Num](m, n int) (*Mat[T], error) {
 	}
 
 	return &Mat[T]{
-		M:    m,
-		N:    n,
-		Data: data,
+		M:      m,
+		N:      n,
+		Stride: n,
+		Data:   data,
 	}, nil
 }
 
+// Random creates a new matrix with random values ranging from 0-1.
+func Random[T number.Num](m, n int) (*Mat[T], error) {
+	if m <= 0 || n <= 0 {
+		return nil, fmt.Errorf("dimensions of matrices must be above zero")
+	}
+
+	data := make([]T, m*n)
+	for i := range data {
+		var zero T
+		switch any(zero).(type) {
+		case int, int8, int16, int32, int64:
+			data[i] = T(rand.Intn(2))
+		case float32:
+			data[i] = T(rand.Float32())
+		case float64:
+			data[i] = T(rand.Float64())
+		}
+	}
+
+	return &Mat[T]{
+		M:      m,
+		N:      n,
+		Stride: n,
+		Data:   data,
+	}, nil
+}
+
+func (m *Mat[T]) index(i, j int) int {
+	if i < 1 || i > m.M {
+		panic("matrix: row index out of bounds")
+	}
+	if j < 1 || j > m.N {
+		panic("matrix: column index out of bounds")
+	}
+	return (i-1)*m.Stride + (j - 1)
+}
+
 func (m *Mat[T]) At(i, j int) T {
-	return m.Data[(i-1)*m.N+(j-1)]
+	return m.Data[m.index(i, j)]
+}
+
+func (m *Mat[T]) Set(i, j int, val T) {
+	m.Data[m.index(i, j)] = val
 }
 
 func Transpose[T number.Num](m *Mat[T]) *Mat[T] {
@@ -84,9 +129,10 @@ func Transpose[T number.Num](m *Mat[T]) *Mat[T] {
 	}
 
 	return &Mat[T]{
-		M:    m.N,
-		N:    m.M,
-		Data: newData,
+		M:      m.N,
+		N:      m.M,
+		Stride: m.M,
+		Data:   newData,
 	}
 }
 
@@ -97,7 +143,7 @@ func T[T number.Num](m *Mat[T]) *Mat[T] {
 func (m *Mat[T]) String() string {
 	var sb strings.Builder
 
-	sb.WriteString(fmt.Sprintf("%d x %d\n", m.M, m.N))
+	fmt.Fprintf(&sb, "%d x %d\n", m.M, m.N)
 
 	// Indices of the printed rows
 	var rowsToPrint []int
@@ -142,6 +188,23 @@ func (m *Mat[T]) String() string {
 	}
 
 	return sb.String()
+}
+
+// Slice creates a view of a submatrix without copying the underlying data.
+// Coordinates are 1-indexed and inclusive.
+func (m *Mat[T]) Slice(
+	rowStart, rowEnd int,
+	colStart, colEnd int,
+) *Mat[T] {
+	start := (rowStart-1)*m.Stride + (colStart - 1)
+	end := (rowEnd-1)*m.Stride + colEnd
+
+	return &Mat[T]{
+		Data:   m.Data[start:end],
+		M:      rowEnd - rowStart + 1,
+		N:      colEnd - colStart + 1,
+		Stride: m.Stride,
+	}
 }
 
 func Scale[T number.Num](m *Mat[T], scalar T) *Mat[T] {
@@ -284,14 +347,14 @@ func flatten[T number.Num](data [][]T) []T {
 	}
 
 	totalElements := 0
-	for i := 0; i < len(data); i++ {
+	for i := range len(data) {
 		totalElements += len(data[i])
 	}
 
 	flat := make([]T, totalElements)
 
 	position := 0
-	for i := 0; i < len(data); i++ {
+	for i := range len(data) {
 		copy(flat[position:], data[i])
 		position += len(data[i])
 	}

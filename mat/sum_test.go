@@ -1,17 +1,13 @@
 package mat_test
 
 import (
-	"fmt"
 	"testing"
-	"time"
 
 	"github.com/lattots/gonum/internal/util"
 	"github.com/lattots/gonum/mat"
 )
 
 func TestMatrixSum(t *testing.T) {
-	start := time.Now()
-
 	// Test case 1: Valid matrices with the same dimensions
 	data1 := [][]float64{
 		{1.1, 2.2, 3.3},
@@ -46,13 +42,9 @@ func TestMatrixSum(t *testing.T) {
 	if !util.EqualMatrix(result, expected) {
 		t.Errorf("Wrong result in matrix addition. Want: %s\nGot: %s", expected, result)
 	}
-
-	fmt.Printf("Runtime: %v\n", time.Since(start))
 }
 
 func TestMatrixSubtract(t *testing.T) {
-	start := time.Now()
-
 	// Test case 1: Valid matrices with the same dimensions
 	data1 := [][]float64{
 		{1.1, 2.2, 3.3},
@@ -87,13 +79,9 @@ func TestMatrixSubtract(t *testing.T) {
 	if !util.EqualMatrix(result, expected) {
 		t.Errorf("Wrong result in matrix subtraction. Want: %s\nGot: %s", expected, result)
 	}
-
-	fmt.Printf("Runtime: %v\n", time.Since(start))
 }
 
 func TestMatrixSumRows(t *testing.T) {
-	start := time.Now()
-
 	m, err := mat.New([][]float64{
 		{1, 1, 1},
 		{2, 2, 2},
@@ -114,13 +102,9 @@ func TestMatrixSumRows(t *testing.T) {
 	if !util.EqualMatrix(result, expected) {
 		t.Errorf("Wrong result in column wise addition. Want: %s\nGot: %s", expected, result)
 	}
-
-	fmt.Printf("Runtime: %v\n", time.Since(start))
 }
 
 func TestMatrixSumColumns(t *testing.T) {
-	start := time.Now()
-
 	m, err := mat.New([][]float64{
 		{1, 1, 1},
 		{2, 2, 2},
@@ -141,13 +125,9 @@ func TestMatrixSumColumns(t *testing.T) {
 	if !util.EqualMatrix(result, expected) {
 		t.Errorf("Wrong result in row wise addition. Want: %s\nGot: %s", expected, result)
 	}
-
-	fmt.Printf("Runtime: %v\n", time.Since(start))
 }
 
 func TestMatrixAddRowVector(t *testing.T) {
-	start := time.Now()
-
 	// Test case 1: Valid dimensions (2x3 matrix and 1x3 row vector)
 	m, err := mat.New([][]float64{
 		{1.0, 2.0, 3.0},
@@ -194,13 +174,9 @@ func TestMatrixAddRowVector(t *testing.T) {
 		}()
 		mat.AddRowVector(m, invalidRow)
 	}()
-
-	fmt.Printf("Runtime: %v\n", time.Since(start))
 }
 
 func TestMatrixAddColVector(t *testing.T) {
-	start := time.Now()
-
 	// Test case 1: Valid dimensions (2x3 matrix and 2x1 column vector)
 	m, err := mat.New([][]float64{
 		{1.0, 2.0, 3.0},
@@ -250,6 +226,4 @@ func TestMatrixAddColVector(t *testing.T) {
 		}()
 		mat.AddColVector(m, invalidCol)
 	}()
-
-	fmt.Printf("Runtime: %v\n", time.Since(start))
 }

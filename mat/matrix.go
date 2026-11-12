@@ -200,10 +200,10 @@ func (m *Mat[T]) Slice(
 	end := (rowEnd-1)*m.Stride + colEnd
 
 	return &Mat[T]{
-		Data:   m.Data[start:end],
 		M:      rowEnd - rowStart + 1,
 		N:      colEnd - colStart + 1,
 		Stride: m.Stride,
+		Data:   m.Data[start:end],
 	}
 }
 
@@ -213,9 +213,10 @@ func Scale[T number.Num](m *Mat[T], scalar T) *Mat[T] {
 		data[i] = m.Data[i] * scalar
 	}
 	return &Mat[T]{
-		M:    m.M,
-		N:    m.N,
-		Data: data,
+		M:      m.M,
+		N:      m.N,
+		Stride: m.N,
+		Data:   data,
 	}
 }
 
@@ -225,9 +226,10 @@ func Add[T number.Num](m *Mat[T], scalar T) *Mat[T] {
 		data[i] = m.Data[i] + scalar
 	}
 	return &Mat[T]{
-		M:    m.M,
-		N:    m.N,
-		Data: data,
+		M:      m.M,
+		N:      m.N,
+		Stride: m.N,
+		Data:   data,
 	}
 }
 
@@ -238,9 +240,10 @@ func Map[T number.Num](m *Mat[T], fn func(T) T) *Mat[T] {
 	}
 
 	return &Mat[T]{
-		M:    m.M,
-		N:    m.N,
-		Data: data,
+		M:      m.M,
+		N:      m.N,
+		Stride: m.N,
+		Data:   data,
 	}
 }
 
@@ -293,9 +296,10 @@ func SliceRows[T number.Num](m *Mat[T], start, end int) *Mat[T] {
 	copy(data, m.Data[startIndex:endIndex])
 
 	return &Mat[T]{
-		M:    slicedRows,
-		N:    m.N,
-		Data: data,
+		M:      slicedRows,
+		N:      m.N,
+		Stride: m.N,
+		Data:   data,
 	}
 }
 
@@ -324,9 +328,10 @@ func GetRows[T number.Num](m *Mat[T], indices []int) *Mat[T] {
 	}
 
 	return &Mat[T]{
-		M:    numRows,
-		N:    numCols,
-		Data: data,
+		M:      numRows,
+		N:      numCols,
+		Stride: numCols,
+		Data:   data,
 	}
 }
 

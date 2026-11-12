@@ -18,9 +18,10 @@ func Sum[T number.Num](m1, m2 *Mat[T]) *Mat[T] {
 	}
 
 	return &Mat[T]{
-		M:    m1.M,
-		N:    m1.N,
-		Data: data,
+		M:      m1.M,
+		N:      m1.N,
+		Stride: m1.N,
+		Data:   data,
 	}
 }
 
@@ -36,9 +37,10 @@ func Subtract[T number.Num](m1, m2 *Mat[T]) *Mat[T] {
 	}
 
 	return &Mat[T]{
-		M:    m1.M,
-		N:    m1.N,
-		Data: data,
+		M:      m1.M,
+		N:      m1.N,
+		Stride: m1.N,
+		Data:   data,
 	}
 }
 
@@ -56,9 +58,10 @@ func SumRows[T number.Num](m *Mat[T]) *Mat[T] {
 	}
 
 	return &Mat[T]{
-		M:    1,
-		N:    m.N,
-		Data: data,
+		M:      1,
+		N:      m.N,
+		Stride: m.N,
+		Data:   data,
 	}
 }
 
@@ -76,9 +79,10 @@ func SumColumns[T number.Num](m *Mat[T]) *Mat[T] {
 	}
 
 	return &Mat[T]{
-		M:    m.M,
-		N:    1,
-		Data: data,
+		M:      m.M,
+		N:      1,
+		Stride: 1,
+		Data:   data,
 	}
 }
 
@@ -98,9 +102,10 @@ func AddRowVector[T number.Num](m, row *Mat[T]) *Mat[T] {
 	}
 
 	return &Mat[T]{
-		M:    m.M,
-		N:    m.N,
-		Data: data,
+		M:      m.M,
+		N:      m.N,
+		Stride: m.N,
+		Data:   data,
 	}
 }
 
@@ -122,8 +127,9 @@ func AddColVector[T number.Num](m, col *Mat[T]) *Mat[T] {
 	}
 
 	return &Mat[T]{
-		M:    m.M,
-		N:    m.N,
-		Data: data,
+		M:      m.M,
+		N:      m.N,
+		Stride: m.N,
+		Data:   data,
 	}
 }

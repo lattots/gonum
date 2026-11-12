@@ -64,9 +64,10 @@ func CrossProduct[T number.Num](v1, v2 *Mat[T]) *Mat[T] {
 	d[2] = v1.Data[0]*v2.Data[1] - v1.Data[1]*v2.Data[0]
 
 	return &Mat[T]{
-		M:    v1.M,
-		N:    v1.N,
-		Data: d,
+		M:      v1.M,
+		N:      v1.N,
+		Stride: v1.N,
+		Data:   d,
 	}
 }
 
